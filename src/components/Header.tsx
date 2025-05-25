@@ -1,16 +1,29 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState, type ChangeEvent } from "react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAppStore } from "../stores/useAppStore"
 
 export default function Header() {
+  const [searchFilters, setSearchFilters] = useState({
+    ingredient: '',
+    category: ''
+  })
   const {pathname} = useLocation()
   const isHome = useMemo(() => pathname === '/',[pathname])
 
   const fetchCategories = useAppStore((state) => state.fetchCategories)
+  const categories = useAppStore((state) => state.categories)
+  
   useEffect(() => {
     fetchCategories()
   }, [])
-  const categories = useAppStore((state) => state.categories)
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
+    setSearchFilters({
+      ...searchFilters,
+      [e.target.name] : e.target.value
+    })
+  }
+  
 
   return (
     <header className={isHome ? 'bg-header bg-center bg-cover' : 'bg-slate-800'}>
@@ -48,10 +61,12 @@ export default function Header() {
 
                   <input
                     type="text"
-                    id='ingridient'
-                    name="ingridient"
+                    id='ingredient'
+                    name="ingredient"
                     className="p-3 w-full rounded-lg focus:outline-none"
                     placeholder="Name or Ingredient. Ex: Vodka, Gin, Rum, etc."
+                    onChange={handleChange}
+                    value={searchFilters.ingredient}
                   
                   />
                 </div>
@@ -65,6 +80,8 @@ export default function Header() {
                     id='category'
                     name="category"
                     className="p-3 w-full rounded-lg focus:outline-none"
+                    onChange={handleChange}
+                    value={searchFilters.category}
                   >
                     <option value="">-- Select --</option>
                     {categories.drinks.map((category) => (
