@@ -13,7 +13,8 @@ export default function Header() {
   const fetchCategories = useAppStore((state) => state.fetchCategories)
   const categories = useAppStore((state) => state.categories)
   const searchRecipies = useAppStore((state) => state.searchRecipies)
-  
+  const showNotification = useAppStore((state) => state.showNotification)
+
   
   useEffect(() => {
     fetchCategories()
@@ -31,7 +32,10 @@ export default function Header() {
 
     // validate
     if(Object.values(searchFilters).includes('')) {
-      console.log('all fields are required')
+      showNotification({
+        text: 'All fields are required',
+        error: true
+      })
       return
     }
 
